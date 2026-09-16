@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Servicio del Backend (Laravel)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fixlat_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=sqlite
+    networks:
+      - fixlat-net
+
+networks:
+  fixlat-net:
+    driver: bridge
