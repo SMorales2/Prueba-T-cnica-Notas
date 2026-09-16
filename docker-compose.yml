@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
-  # Servicio del Backend (Laravel)
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: fixlat_backend
     restart: always

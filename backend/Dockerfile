@@ -23,7 +23,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 # Copiar el código del backend
-COPY ./backend /var/www
+COPY . /var/www
 
 # Instalar las dependencias de PHP de producción/desarrollo
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
