@@ -5,7 +5,7 @@ Prueba técnica: aplicación web para que un equipo consulte su actividad, admin
 > **Estado de la entrega**: proyecto completamente funcional en **ejecución local** mediante Docker Compose. **No se realizó despliegue en AWS**; la arquitectura de despliegue (SAM/CloudFormation) está preparada pero no fue ejecutada contra una cuenta real. No hay URL pública que visitar — toda la demostración se hace en local.
 
 - **Tiempo empleado**: ~9 horas de trabajo efectivo.
-- **Commit entregado**: `[completar con el hash del commit final antes de entregar]`
+- **Commit entregado**: `[83199432]`
 
 ## Índice
 
