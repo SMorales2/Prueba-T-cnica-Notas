@@ -1,22 +1,21 @@
 <?php
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-// 1. Asignar nombre 'login' para que Sanctum no lance RouteNotFoundException
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+// Rutas públicas (permite a Lambda consultar las notas sin token)
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/notes', [NoteController::class, 'index']);
 
 // Rutas protegidas por Sanctum
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
 
-    // Notas del tablero
-    Route::apiResource('notes', NoteController::class);
+    // Operaciones de escritura/eliminación protegidas
+    Route::apiResource('notes', NoteController::class)->except(['index']);
 
-    // Rutas de administración de usuarios
     Route::middleware('can:admin-only')->group(function () {
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);

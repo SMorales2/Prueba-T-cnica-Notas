@@ -1,24 +1,36 @@
-*.log
-.DS_Store
+# Dependencias (aplica a backend, frontend y lambda)
+node_modules/
+vendor/
+
+# Entorno y Secretos
 .env
-.env.backup
-.env.production
-.phpactor.json
+.env.*
+!.env.example
+auth.json
+
+# Compilación y Estáticos
+public/build
+public/hot
+public/storage
+dist/
+
+# Archivos de Registro y Caché
+*.log
 .phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
+.phpunit.cache/
+storage/*.key
+storage/pail/
+
+# Configuración de Editores e IDEs
+.idea/
+.vscode/
+.fleet/
+.nova/
+.zed/
+.phpactor.json
+
+# Archivos de Sistema Operativo
+.DS_Store
+Thumbs.db
 Homestead.json
 Homestead.yaml
-Thumbs.db
