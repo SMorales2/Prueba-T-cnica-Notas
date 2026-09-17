@@ -64,4 +64,25 @@ class NoteController extends Controller
 
         return response()->json(['message' => 'Nota eliminada correctamente']);
     }
+
+    Public function metrics(Request $request)
+    {
+        // Validar token secreto interno para seguridad entre contenedores
+        $internalToken = $request->header('X-Internal-Token');
+        if ($internalToken !== 'secret-token-local') {
+            return response()->json(['message' => 'No autorizado'], 401);
+        }
+
+        $total = Note::count();
+        $distribution = [
+            'Pendiente' => Note::where('status', 'Pendiente')->count(),
+            'En curso'  => Note::where('status', 'En curso')->count(),
+            'Hecho'     => Note::where('status', 'Hecho')->count(),
+        ];
+
+        return response()->json([
+            'total' => $total,
+            'distribution' => $distribution
+        ]);
+    }
 }

@@ -4,9 +4,13 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+
+
+
 // Rutas públicas (permite a Lambda consultar las notas sin token)
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/notes', [NoteController::class, 'index']);
+Route::get('/internal/metrics', [NoteController::class, 'metrics']);
 
 // Rutas protegidas por Sanctum
 Route::middleware('auth:sanctum')->group(function () {

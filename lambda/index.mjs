@@ -5,9 +5,12 @@ export const handler = async () => {
     const options = {
       hostname: 'backend',
       port: 8000,
-      path: '/api/notes',
+      path: '/api/internal/metrics',
       method: 'GET',
-      headers: { 'Accept': 'application/json' }
+      headers: { 
+        'Accept': 'application/json',
+        'X-Internal-Token': 'secret-token-local'
+      }
     };
 
     const req = http.request(options, (res) => {
@@ -17,37 +20,25 @@ export const handler = async () => {
         try {
           const parsed = JSON.parse(data);
           
-          // Soporta respuesta en array directo o envoltorio { data: [...] }
-          let list = [];
-          if (Array.isArray(parsed)) {
-            list = parsed;
-          } else if (parsed && Array.isArray(parsed.data)) {
-            list = parsed.data;
-          }
-
-          const pendiente = list.filter((n) => n.status === 'Pendiente').length;
-          const enCurso = list.filter((n) => n.status === 'En curso').length;
-          const hecho = list.filter((n) => n.status === 'Hecho' || n.status === 'Completada').length;
-
           resolve({
-            statusCode: 200,
+            statusCode: res.statusCode || 200,
             headers: {
               'Content-Type': 'application/json',
               'Access-Control-Allow-Origin': '*'
             },
             body: JSON.stringify({
-              total: list.length,
-              distribution: {
-                Pendiente: pendiente,
-                'En curso': enCurso,
-                Hecho: hecho
+              total: parsed.total || 0,
+              distribution: parsed.by_status || parsed.distribution || {
+                Pendiente: 0,
+                'En curso': 0,
+                Hecho: 0
               }
             })
           });
         } catch (e) {
           resolve({
             statusCode: 500,
-            body: JSON.stringify({ error: 'Error procesando JSON de notas' })
+            body: JSON.stringify({ error: 'Error procesando JSON de métricas' })
           });
         }
       });
