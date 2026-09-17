@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infraestructura AWS SAM para Portal de Equipo y Métricas Lambda
+
+Resources:
+  # 1. Lambda para cálculo de métricas del Dashboard
+  MetricsLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Events:
+        GetMetricsApi:
+          Type: Api
+          Properties:
+            Path: /metrics
+            Method: get
+
+  # 2. Instancia EC2 para API Backend en Docker
+  BackendEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2
+      SecurityGroups:
+        - !Ref WebSecurityGroup
+
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permitir tráfico HTTP y API
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8000
+          ToPort: 8000
+          CidrIp: 0.0.0.0/0
+
+  # 3. S3 Bucket para Hosting Frontend estático
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+Outputs:
+  LambdaApiUrl:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/metrics"

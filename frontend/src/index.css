@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos de contingencia para Lienzo y Post-its */
+.canvas-bg {
+  background-color: #cbd5e1;
+  background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.post-it {
+  position: absolute;
+  width: 240px;
+  min-height: 180px;
+  background-color: #fef08a;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+  border-top: 24px solid #fde047;
+  border-radius: 4px;
+  transition: box-shadow 0.2s ease;
+}
+
+.post-it:hover {
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.25);
+}

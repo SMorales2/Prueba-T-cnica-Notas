@@ -7,10 +7,14 @@ use Illuminate\Http\Request;
 
 class NoteController extends Controller
 {
-    // Listar todas las notas del tablero compartido
+    // Listar todas las notas ordenadas por ID
     public function index()
     {
-        $notes = Note::with('user:id,name')->get();
+        $notes = Note::select('id', 'title', 'text', 'status', 'position_x', 'position_y', 'user_id', 'updated_at')
+            ->with('user:id,name')
+            ->orderBy('id', 'asc')
+            ->get();
+
         return response()->json($notes);
     }
 
@@ -29,18 +33,15 @@ class NoteController extends Controller
             'title' => $validated['title'],
             'text' => $validated['text'] ?? '',
             'status' => $validated['status'] ?? 'Pendiente',
-            'position_x' => $validated['position_x'] ?? 0,
-            'position_y' => $validated['position_y'] ?? 0,
+            'position_x' => $validated['position_x'] ?? 40,
+            'position_y' => $validated['position_y'] ?? 40,
             'user_id' => $request->user()->id,
         ]);
 
-        return response()->json([
-            'message' => 'Nota creada exitosamente',
-            'note' => $note->load('user:id,name')
-        ], 201);
+        return response()->json($note->load('user:id,name'), 201);
     }
 
-    // Actualizar nota (útil para mover de posición, cambiar estado o texto)
+    // Actualizar nota sin recargar todo el lienzo
     public function update(Request $request, Note $note)
     {
         $validated = $request->validate([
@@ -53,10 +54,7 @@ class NoteController extends Controller
 
         $note->update($validated);
 
-        return response()->json([
-            'message' => 'Nota actualizada correctamente',
-            'note' => $note->load('user:id,name')
-        ]);
+        return response()->json($note->load('user:id,name'));
     }
 
     // Eliminar una nota
@@ -64,8 +62,6 @@ class NoteController extends Controller
     {
         $note->delete();
 
-        return response()->json([
-            'message' => 'Nota eliminada correctamente'
-        ]);
+        return response()->json(['message' => 'Nota eliminada correctamente']);
     }
 }

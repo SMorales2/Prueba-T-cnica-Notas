@@ -9,9 +9,21 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    // Listar todos los usuarios
-    public function index()
+    /**
+     * Método privado para verificar que el usuario autenticado sea Administrador.
+     */
+    private function authorizeAdmin(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Acceso denegado. Se requieren permisos de administrador.');
+        }
+    }
+
+    // Listar todos los usuarios
+    public function index(Request $request)
+    {
+        $this->authorizeAdmin($request);
+
         $users = User::select('id', 'name', 'email', 'role', 'is_active', 'created_at')
             ->orderBy('id', 'desc')
             ->get();
@@ -22,6 +34,8 @@ class UserController extends Controller
     // Crear un nuevo usuario
     public function store(Request $request)
     {
+        $this->authorizeAdmin($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -47,6 +61,8 @@ class UserController extends Controller
     // Editar un usuario existente
     public function update(Request $request, User $user)
     {
+        $this->authorizeAdmin($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
@@ -87,8 +103,10 @@ class UserController extends Controller
     }
 
     // Alternar estado activo / inactivo
-    public function toggleStatus(User $user)
+    public function toggleStatus(Request $request, User $user)
     {
+        $this->authorizeAdmin($request);
+
         // REGLA DE NEGOCIO: Si el admin está activo y se intenta desactivar
         if ($user->role === 'admin' && $user->is_active) {
             $activeAdminCount = User::where('role', 'admin')->where('is_active', true)->count();

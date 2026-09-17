@@ -16,6 +16,37 @@ services:
     networks:
       - fixlat-net
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fixlat_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - fixlat-net
+
+  lambda:
+    build:
+      context: ./lambda
+      dockerfile: Dockerfile
+    container_name: fixlat_lambda
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./lambda:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - BACKEND_HOST=backend
+    depends_on:
+      - backend
+    networks:
+      - fixlat-net
+
 networks:
   fixlat-net:
     driver: bridge
